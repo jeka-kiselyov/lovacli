@@ -1,10 +1,14 @@
 {
   "name": "lovacli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "node.js CLI boilerplate with Mongoose/Sequelize as MongoDB, MySQL, PostgreSQL ORM/ODM",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeka-kiselyov/lovacli.git"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha app/tests"
   },
   "author": "Jeka Kiselyov <jeka911@gmail.com>",
   "license": "ISC",
@@ -18,6 +22,9 @@
     "sequelize": "^4.2.1",
     "winston": "^2.3.1"
   },
+  "bundledDependencies": [
+    "rfr"
+  ],
   "devDependencies": {
     "chai": "^4.0.2",
     "grunt": "^1.0.1",
