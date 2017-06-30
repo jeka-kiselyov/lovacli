@@ -1,6 +1,6 @@
 {
   "name": "lovacli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "node.js CLI boilerplate with Mongoose/Sequelize as MongoDB, MySQL, PostgreSQL ORM/ODM",
   "license": "MIT",
   "main": "index.js",
@@ -12,7 +12,6 @@
     "test": "node_modules/.bin/mocha app/tests"
   },
   "author": "Jeka Kiselyov <jeka911@gmail.com>",
-  "license": "ISC",
   "dependencies": {
     "bluebird": "^3.5.0",
     "caporal": "^0.6.0",
