@@ -39,8 +39,8 @@ var loadModelsPaths = function(dirname) {
 	dirname = dirname || config.paths.models;
 
 	return new Promise(function(resolve, reject) {
-		var absPath = path.join(rfr.root, dirname);
-		walk(absPath, function(err, results) {
+
+		walk(dirname, function(err, results) {
 			if (err) {
 				return reject(err);
 			}
@@ -75,8 +75,8 @@ exports.loadModels = function(dirname) {
 exports.loadCommands = function(dirname) {
 	dirname = dirname || config.paths.commands;
 	return new Promise(function(resolve, reject) {
-		var absPath = path.join(rfr.root, dirname);
-		walk(absPath, function(err, results) {
+
+		walk(dirname, function(err, results) {
 			if (err) {
 				return reject(err);
 			}

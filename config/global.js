@@ -1,12 +1,15 @@
+const rfr = require('rfr');
+const path = require('path');
+
 module.exports = function() {
 
 	return {
-	    "name": "LA Marketing CLI Worker",
+	    "name": "LovaCLISampleApp",
 	    "version": "1.0.0",
 	    "paths": {
-	      "models": "app/models",
-	      "commands": "app/commands",
-	      "tests": "app/tests"
+	      "models": path.join(rfr.root, "app/models"),
+	      "commands": path.join(rfr.root, "app/commands"),
+	      "tests": path.join(rfr.root, "app/tests")
 	    },
 	    "errors": {
 	      "displayStack": false,

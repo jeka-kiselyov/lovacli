@@ -31,7 +31,10 @@ var initApplication = function(options) {
 if (!module.parent) {
 	initApplication();
 } else {
-	module.exports = initApplication;
+	module.exports = {
+		init: initApplication,
+		db: db
+	};
 }
 
 
