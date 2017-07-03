@@ -5,7 +5,7 @@ module.exports = function() {
 		"database": {
 			"dialect": "mysql",
 			"host": "localhost",
-			"database": 'la-investorportal',
+			"database": 'database',
 			"username": "root",
 			"password": "root"
 		}
