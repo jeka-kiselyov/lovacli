@@ -33,7 +33,8 @@ if (!module.parent) {
 } else {
 	module.exports = {
 		init: initApplication,
-		db: db
+		db: db,
+		prog: prog
 	};
 }
 
