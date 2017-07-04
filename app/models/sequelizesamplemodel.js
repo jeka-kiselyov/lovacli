@@ -16,14 +16,11 @@ module.exports = function(sequelize, DataTypes) {
 	}, {
 		timestamps: false,
 		freezeTableName: true,
-		tableName: 'd_deals',
-		classMethods: {
-            // someMethod: function() { }   //// db.Deal.someMethod()
-        },
-		instanceMethods: {
-			// someMethod: function() { }    //// item.someMethod()
-		}
+		tableName: 'd_deals'
 	});
+
+	// model.someMethod = function() { }    //// db.Sample.someMethod()
+	// model.prototype.someMethod = function() { } /// instance.someMethod()
 
 	return model;
 };
