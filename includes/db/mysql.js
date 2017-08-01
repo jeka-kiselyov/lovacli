@@ -48,7 +48,7 @@ var initMySQL = function() {
 				}
 			});
 
-			log.info('Models loaded');
+			log.debug('Models loaded');
 
 			Object.keys(db).forEach(function(modelName) {
 			  if (db[modelName].associate) {

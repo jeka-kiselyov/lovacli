@@ -28,13 +28,21 @@ var initApplication = function(options) {
 	});
 };
 
+var exitApplication = function(options) {
+	options = options || {};
+
+	process.exit();	
+};
+
 if (!module.parent) {
 	initApplication();
 } else {
 	module.exports = {
 		init: initApplication,
+		exit: exitApplication,
 		db: db,
-		prog: prog
+		prog: prog,
+		logger: logger
 	};
 }
 
