@@ -3,25 +3,44 @@ var path = require('path');
 var winston = require('winston');
 var config = rfr('includes/config.js');
 
-var transports = [];
+var __loggers = {};
 
-transports.push(new(winston.transports.File)({
-			filename: path.join(rfr.root, 'data/logs/application.log'),
-			level: 'info'
-		}));
+var getLogger = function(location) {
+	location = location || config.paths.log || path.join(rfr.root, 'data/logs/application.log');
 
-if (config.debug) {
-	transports.push(new(winston.transports.Console)({
-				level: 'debug'
-			}));	
-} else {
-	transports.push(new(winston.transports.Console)({
-				level: 'error'
-			}));	
-}
+	if (__loggers[location]) {
+		return __loggers[location];
+	}
 
-var logger = new(winston.Logger)({
-	transports: transports
-});
+	var transports = [];
 
-module.exports = logger;
+
+	if (config.debug) {
+		transports.push(new(winston.transports.Console)({
+					level: 'debug'
+				}));
+		transports.push(new(winston.transports.File)({
+					filename: location,
+					level: 'debug'
+				}));	
+	} else {
+		transports.push(new(winston.transports.Console)({
+					level: 'error'
+				}));	
+		transports.push(new(winston.transports.File)({
+					filename: location,
+					level: 'info'
+				}));	
+	}
+
+	__loggers[location] = new(winston.Logger)({
+		transports: transports
+	});
+
+	__loggers[location].debug('New Logger instance created');
+
+	return __loggers[location];
+};
+
+
+module.exports = getLogger;

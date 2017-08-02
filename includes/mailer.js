@@ -3,10 +3,10 @@ var rfr = require('rfr');
 var path = require('path');
 var fs = require('fs');
 var config = rfr('includes/config.js');
-var logger = rfr('includes/logger.js');
 var Promise = require("bluebird");
 var _ = require('lodash');
 
+var logger = rfr('includes/logger.js')();
 
 var transporter = null;
 var filterExampleDotComEmails = false;

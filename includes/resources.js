@@ -2,8 +2,9 @@ var fs = require('fs');
 var rfr = require('rfr');
 var Promise = require('bluebird');
 var path = require('path');
-var log = rfr('includes/logger.js');
 var config = rfr('includes/config.js');
+
+var log = rfr('includes/logger.js')();
 
 var walk = function(dir, done) {
 	var results = [];

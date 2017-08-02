@@ -6,7 +6,8 @@ var resources = rfr('includes/resources.js');
 var config = rfr('includes/config.js');
 var Promise = require("bluebird");
 var db = {};
-var log = rfr('includes/logger.js');
+
+var log = rfr('includes/logger.js')();
 
 var init = function() {
 	return new Promise(function(resolve, reject) {

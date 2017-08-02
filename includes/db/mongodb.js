@@ -6,7 +6,7 @@ var resources = rfr('includes/resources.js');
 var config = rfr('includes/config.js');
 var Promise = require("bluebird");
 
-var log = rfr('includes/logger.js');
+var log = rfr('includes/logger.js')();
 
 try {
     require.resolve("mongoose");
