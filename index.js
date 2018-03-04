@@ -34,12 +34,40 @@ var initApplication = function(options) {
 var exitApplication = function(options) {
 	options = options || {};
 
+	if (options instanceof Error) {
+		options = {
+			error: options
+		};
+	}
+
+	if (options.error instanceof Error) {
+		if (config.debug) {
+			application.logger.error(options.error.stack);
+		} else {
+			application.logger.error(""+options.error);			
+		}
+	}
+
 	process.exit();	
 };
+
+var handleCatcher = function(handler) {
+	let newHandler = function(args, options, logger) {
+		try {
+			return handler(args, options, logger);
+		} catch(e) {
+			console.log(e);
+		}
+		return null;
+	}
+
+	return newHandler;
+}
 
 var application = {
 	init: initApplication,
 	exit: exitApplication,
+	handleCatcher: handleCatcher,
 	prog: prog
 };
 
