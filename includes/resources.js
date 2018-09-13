@@ -1,20 +1,17 @@
-var fs = require('fs');
-var rfr = require('rfr');
-var Promise = require('bluebird');
-var path = require('path');
-var config = rfr('includes/config.js');
+const fs = require('fs');
+const path = require('path');
+const config = require(path.join(__dirname, '../includes/config.js'));
+const log = require(path.join(__dirname, '../includes/logger.js'))();
 
-var log = rfr('includes/logger.js')();
-
-var walk = function(dir, done) {
-	var results = [];
+let walk = function(dir, done) {
+	let results = [];
 	fs.readdir(dir, function(err, list) {
 		if (err) {
 			return done(err);
 		}
-		var i = 0;
+		let i = 0;
 		(function next() {
-			var file = list[i++];
+			let file = list[i++];
 			if (!file) {
 				return done(null, results);
 			}
@@ -36,11 +33,10 @@ var walk = function(dir, done) {
 	});
 };
 
-var loadModelsPaths = function(dirname) {
+let loadModelsPaths = function(dirname) {
 	dirname = dirname || config.paths.models;
 
 	return new Promise(function(resolve, reject) {
-
 		walk(dirname, function(err, results) {
 			if (err) {
 				return reject(err);
@@ -56,9 +52,9 @@ exports.loadModels = function(dirname) {
 	dirname = dirname || config.paths.models;
 	return new Promise(function(resolve, reject) {
 		loadModelsPaths(dirname).then(function(paths){
-			var models = [];
+			let models = [];
 			paths.forEach(function(file){
-				var inc = require(file);
+				let inc = require(file);
 
 				if (inc && typeof inc == 'function') {
 					models.push(inc);
@@ -82,10 +78,10 @@ exports.loadCommands = function(dirname) {
 				return reject(err);
 			}
 
-			var commands = [];
+			let commands = [];
 			results.forEach(function(file){
-				var name = file.substr(file.lastIndexOf('/'), file.indexOf('.'));
-				var inc = require(file);
+				let name = file.substr(file.lastIndexOf('/'), file.indexOf('.'));
+				let inc = require(file);
 
 				if (inc && 'handler') {
 					commands.push({

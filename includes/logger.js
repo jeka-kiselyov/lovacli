@@ -1,19 +1,18 @@
-var rfr = require('rfr');
-var path = require('path');
-var winston = require('winston');
-var config = rfr('includes/config.js');
+const path = require('path');
+const winston = require('winston');
+const config = require(path.join(__dirname, '../includes/config.js'));
 
-var __loggers = {};
+let __loggers = {};
 
-var getLogger = function(location) {
-	location = location || config.paths.log || path.join(rfr.root, 'data/logs/application.log');
+let getLogger = function(location) {
+
+	location = location || config.paths.log || path.join(__dirname, '../data/logs/application.log');
 
 	if (__loggers[location]) {
 		return __loggers[location];
 	}
 
-	var transports = [];
-
+	let transports = [];
 
 	if (config.debug) {
 		transports.push(new(winston.transports.Console)({
@@ -37,7 +36,7 @@ var getLogger = function(location) {
 		transports: transports
 	});
 
-	__loggers[location].debug('New Logger instance created');
+	// __loggers[location].debug('New Logger instance created');
 
 	return __loggers[location];
 };

@@ -1,8 +1,8 @@
-var rfr = require('rfr');
-var fs = require('fs');
-var expect = require('chai').expect;
-var assert = require('chai').assert;
-var db = rfr('includes/db.js');
+const path = require('path');
+const fs = require('fs');
+const expect = require('chai').expect;
+const assert = require('chai').assert;
+const db = require(path.join(__dirname, '../../includes/db.js'));
 
 describe('We gonna test everything', function() {
 

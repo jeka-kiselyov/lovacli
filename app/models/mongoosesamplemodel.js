@@ -1,7 +1,5 @@
-var rfr = require('rfr');
-var db = rfr('includes/db.js');
-db.requireDialect('mongodb');
-var Promise = require('bluebird');
+// var db = rfr('includes/db.js');
+// db.requireDialect('mongodb');
 
 module.exports = function(mongoose, connection) {
 	var modelName = 'Sample';

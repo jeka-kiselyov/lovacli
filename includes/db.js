@@ -1,20 +1,19 @@
-var fs = require('fs');
-var path = require('path');
-var rfr = require('rfr');
-var basename = path.basename(module.filename);
-var resources = rfr('includes/resources.js');
-var config = rfr('includes/config.js');
-var Promise = require("bluebird");
-var db = {};
+const fs = require('fs');
+const path = require('path');
 
-var log = rfr('includes/logger.js')();
+const resources = require(path.join(__dirname, '../includes/resources.js'));
+const config = require(path.join(__dirname, '../includes/config.js'));
 
-var init = function() {
+let db = {};
+let log = require(path.join(__dirname, '../includes/logger.js'))();
+
+let init = function() {
 	return new Promise(function(resolve, reject) {
-		if (config.database.dialect == 'mongodb') {
-			var initialize = rfr('includes/db/mongodb.js').init;
-		} else if (config.database.dialect == 'mysql') {
-			var initialize = rfr('includes/db/mysql.js').init;
+		let initialize = null;
+		if (config.database && config.database.dialect == 'mongodb') {
+			initialize = require(path.join(__dirname, '../includes/db/mongodb.js')).init;
+		} else if (config.database && config.database.dialect == 'mysql') {
+			initialize = require(path.join(__dirname, '../includes/db/mysql.js')).init;
 		} else {
 			return reject('Invalid database dialect in config');
 		}
@@ -29,7 +28,7 @@ var init = function() {
 };
 
 
-var getDocument = function(documentOrId, documentType) {
+let getDocument = function(documentOrId, documentType) {
 	return new Promise(function(resolve, reject) {
 		if (documentOrId instanceof db[documentType]) {
 			resolve(documentOrId);
@@ -43,7 +42,7 @@ var getDocument = function(documentOrId, documentType) {
 	});
 };
 
-var getDocumentId = function(documentOrId) {
+let getDocumentId = function(documentOrId) {
 	if (documentOrId && documentOrId.constructor.name === 'model') {
 		// object is mongoose object
 		return mongoose.Types.ObjectId(documentOrId.id);
@@ -52,20 +51,20 @@ var getDocumentId = function(documentOrId) {
 	}
 };
 
-var isIdsEquals = function(documentOrId1, documentOrId2) {
+let isIdsEquals = function(documentOrId1, documentOrId2) {
 	return (getDocumentId(documentOrId1).equals(getDocumentId(documentOrId2)));
 }
 
-var requireDialect = function(dialect) {
+let requireDialect = function(dialect) {
 	if (config.database.dialect != dialect) {
 		throw ''+dialect+' is required';
 	}
 }
-
 
 db.requireDialect = requireDialect;
 db.isIdsEquals = isIdsEquals;
 db.getDocumentId = getDocumentId;
 db.getDocument = getDocument;
 db.init = init;
+
 module.exports = db;

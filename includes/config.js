@@ -1,7 +1,7 @@
-var rfr = require('rfr');
-var _ = require('lodash');
+const _ = require('lodash');
+const path = require('path');
 
-var config = rfr('config/global.js')();
+let config =  require(path.join(__dirname, '../config/global.js'))();
 
 config.updateConfig = function(options) {
 	_.merge(config, options);

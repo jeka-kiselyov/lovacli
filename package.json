@@ -1,7 +1,7 @@
 {
   "name": "lovacli",
-  "version": "0.0.13",
-  "description": "node.js CLI boilerplate with Mongoose/Sequelize as MongoDB, MySQL, PostgreSQL ORM/ODM",
+  "version": "0.1.1",
+  "description": "node.js CLI boilerplate with optional Mongoose/Sequelize as MongoDB, MySQL, PostgreSQL ORM/ODM",
   "license": "MIT",
   "main": "index.js",
   "repository": {
@@ -13,16 +13,13 @@
   },
   "author": "Jeka Kiselyov <jeka911@gmail.com>",
   "dependencies": {
-    "bluebird": "^3.5.0",
     "caporal": "^0.6.0",
     "lodash": "^4.17.4",
-    "mongoose": "^4.11.0",
-    "mysql2": "^1.3.5",
-    "rfr": "^1.2.3",
-    "sequelize": "^4.2.1",
+    "mongoose": "^5.2.14",
+    "mysql2": "^1.6.1",
+    "sequelize": "^4.38.1",
     "winston": "^2.3.1"
   },
-  "bundledDependencies": ["rfr"],
   "devDependencies": {
     "chai": "^4.0.2",
     "grunt": "^1.0.1",

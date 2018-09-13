@@ -1,80 +1,102 @@
 #!/usr/bin/env node
 
-var rfr = require('rfr');
-var prog = require('caporal');
+const prog = require('caporal');
+const path = require('path');
 
-var config = rfr('includes/config.js');
-
-var initApplication = function(options) {
-	options = options || {};
-
-	config.updateConfig(options);
-
-	var db = rfr('includes/db.js');
-	var resources = rfr('includes/resources.js');
-	var logger = rfr('includes/logger.js');
-
-	application.logger = logger();
-	application.db = db;
-
-	prog
-	  .version('1.0.0')
-	  .logger(application.logger)
-	  .description(config.name);
-
-	resources.loadCommands().then(function(handlers){
-		for (var k in handlers) {
-			handlers[k].handler(prog);
+class LovaCLIApplication {
+	constructor(options) {
+		if (options) {
+			this.init(options);
 		}
 
-		prog.parse(process.argv);
-	});
-};
-
-var exitApplication = function(options) {
-	options = options || {};
-
-	if (options instanceof Error) {
-		options = {
-			error: options
-		};
+		this._config = require(path.join(__dirname, 'includes/config.js'));
+		this._logger = require(path.join(__dirname, 'includes/logger.js'))();
+		this._db = require(path.join(__dirname, 'includes/db.js'));
 	}
 
-	if (options.error instanceof Error) {
-		if (config.debug) {
-			application.logger.error(options.error.stack);
-		} else {
-			application.logger.error(""+options.error);			
-		}
+	get logger() {
+		return this._logger;
 	}
 
-	process.exit();	
-};
+	get db() {
+		return this._db;
+	}
 
-var handleCatcher = function(handler) {
-	let newHandler = function(args, options, logger) {
+	get config() {
+		return this._config;
+	}
+
+	init(options = {}) {
+		this.config.updateConfig(options);
+
 		try {
-			return handler(args, options, logger);
+			let resources = require(path.join(__dirname, 'includes/resources.js'));
+
+			prog
+			  .version('1.0.0')
+			  .logger(this.logger)
+			  .description(this.config.name);
+
+			prog.application = this;
+
+			resources.loadCommands().then(function(handlers){
+				for (let k in handlers) {
+					handlers[k].handler(prog);
+				}
+
+				prog.parse(process.argv);
+			});
 		} catch(e) {
-			console.log(e);
+			this.exit(e);
 		}
-		return null;
 	}
 
-	return newHandler;
-}
+	exit(e = null) {
+		if (e instanceof Error) {
+			if (this.config.debug) {
+				this.logger.error(e.stack);
+			} else {
+				this.logger.error(""+e);			
+			}			
+			process.exit(1); // @todo: get code from Error object?
+		} else {
+			process.exit();
+		}
+	}
 
-var application = {
-	init: initApplication,
-	exit: exitApplication,
-	handleCatcher: handleCatcher,
-	prog: prog
+	handleCatcher(handler) {
+		let application = this;
+		if (handler && handler.constructor && handler.constructor.name == 'AsyncFunction') {
+			let newHandler = async function(args, options, logger) {
+				try {
+					return await handler(args, options, logger);
+				} catch(e) {
+					application.exit(e);
+				}
+				return null;
+			}
+
+			return newHandler;
+		} else {
+			let newHandler = function(args, options, logger) {
+				try {
+					return handler(args, options, logger);
+				} catch(e) {
+					application.exit(e);
+				}
+				return null;
+			}
+
+			return newHandler;		
+		}
+	}
 };
 
 if (!module.parent) {
-	initApplication();
+	let application = new LovaCLIApplication();
+	application.init();
 } else {
-	module.exports = application;
+	module.exports = LovaCLIApplication;
 }
 
 

@@ -1,7 +1,5 @@
-var rfr = require('rfr');
-var db = rfr('includes/db.js');
-db.requireDialect('mysql');
-var Promise = require('bluebird');
+// var db = rfr('includes/db.js');
+// db.requireDialect('mysql');
 
 module.exports = function(sequelize, DataTypes) {
 	var model = sequelize.define('Sample', {
@@ -16,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
 	}, {
 		timestamps: false,
 		freezeTableName: true,
-		tableName: 'd_deals'
+		tableName: 'mt_li_profiles'
 	});
 
 	// model.someMethod = function() { }    //// db.Sample.someMethod()

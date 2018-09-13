@@ -1,48 +1,54 @@
-var fs = require('fs');
-var path = require('path');
-var rfr = require('rfr');
-var basename = path.basename(module.filename);
-var resources = rfr('includes/resources.js');
-var config = rfr('includes/config.js');
-var Promise = require("bluebird");
+const fs = require('fs');
+const path = require('path');
 
-var log = rfr('includes/logger.js')();
+const resources = require(path.join(__dirname, '../../includes/resources.js'));;
+const config = require(path.join(__dirname, '../../includes/config.js'));;
+const log = require(path.join(__dirname, '../../includes/logger.js'))();;
 
 try {
     require.resolve("sequelize");
 } catch(e) {
-    log.error("Sequelize is not found. Run: npm install sequelize --save");
+    log.error("Sequelize is not found. Install it in order to use mysql models in lovacli. Run: npm install sequelize --save");
     process.exit(e.code);
 }
 
-var Sequelize = require('sequelize');
+try {
+    require.resolve("mysql2");
+} catch(e) {
+    log.error("mysql2 is not found. Install it in order to use mysql models in lovacli. Run: npm install mysql2 --save");
+    process.exit(e.code);
+}
 
-var options = {
+const Sequelize = require('sequelize');
+
+const options = {
 	logging: false
 };
 
-var initMySQL = function() {
+let initMySQL = function() {
 	return new Promise(function(resolve, reject) {
-		var db = {};
+		let db = {};
 
-		var options = {
+		let options = {
 			logging: false
 		};
 
+		let sequelize = null;
+
 		if (config.database.use_env_variable) {
-			var sequelize = new Sequelize(process.env[config.database.use_env_variable], options);
+			sequelize = new Sequelize(process.env[config.database.use_env_variable], options);
 		} else {
 			options.host = config.database.host || null;
 			options.dialect = config.database.dialect || null;
 			options.storage = config.database.storage || null;
 
-			var sequelize = new Sequelize(config.database.database, config.database.username, config.database.password, options);
+			sequelize = new Sequelize(config.database.database, config.database.username, config.database.password, options);
 		}
 
 		resources.loadModelsPaths().then(function(paths){
 			paths.forEach(function(path) {
 				try {
-				    var model = sequelize['import'](path);
+				    let model = sequelize['import'](path);
 				    db[model.name] = model;
 				} catch(e) {
 					log.error("Invalid sequelize model: "+path+" | ", e);

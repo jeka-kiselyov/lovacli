@@ -1,37 +1,30 @@
-var fs = require('fs');
-var path = require('path');
-var rfr = require('rfr');
-var basename = path.basename(module.filename);
-var resources = rfr('includes/resources.js');
-var config = rfr('includes/config.js');
-var Promise = require("bluebird");
+const fs = require('fs');
+const path = require('path');
 
-var log = rfr('includes/logger.js')();
+const resources = require(path.join(__dirname, '../../includes/resources.js'));;
+const config = require(path.join(__dirname, '../../includes/config.js'));;
+const log = require(path.join(__dirname, '../../includes/logger.js'))();;
 
 try {
     require.resolve("mongoose");
 } catch(e) {
-    log.error("Mongoose is not found. Run: npm install mongoose --save");
+    log.error("Mongoose is not found. Install it in order to use mongodb models in lovacli. Run: npm install mongoose --save");
     process.exit(e.code);
 }
 
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-
-var options = {
+const options = {
 	logging: false
 };
 
-var initMongoose = function() {
+let initMongoose = function() {
 	return new Promise(function(resolve, reject) {
-		var db = {};
+		let db = {};
 
-	    var options = { 
-	    	useMongoClient: true,
-	    	promiseLibrary: require('bluebird')
+	    let options = { 
+	    	useNewUrlParser: true
 	    };
-
-	    mongoose.Promise = require('bluebird');
 
 		log.debug('Creating connection to MongoDB');
 	    mongoose.createConnection(config.database.database, options).then(function(connection){
@@ -39,9 +32,9 @@ var initMongoose = function() {
 
 			resources.loadModelsPaths().then(function(paths){
 				paths.forEach(function(path) {
-					var inc = null;
+					let inc = null;
 					try {
-						var model = require(path);
+						let model = require(path);
 						inc = model(mongoose, connection);
 
 						if (inc && inc.modelName && inc.model) {
