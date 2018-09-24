@@ -1,5 +1,4 @@
-// var db = rfr('includes/db.js');
-// db.requireDialect('mysql');
+
 
 module.exports = function(sequelize, DataTypes) {
 	var model = sequelize.define('Sample', {

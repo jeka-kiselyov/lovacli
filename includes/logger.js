@@ -1,45 +1,54 @@
 const path = require('path');
 const winston = require('winston');
-const config = require(path.join(__dirname, '../includes/config.js'));
 
-let __loggers = {};
+class Logger {
+	constructor(config = {}) {
+		this._logFileName = config.paths.log || path.join(__dirname, '../data/logs/application.log');
 
-let getLogger = function(location) {
+		let transports = [];
 
-	location = location || config.paths.log || path.join(__dirname, '../data/logs/application.log');
+		if (config.debug) {
+			transports.push(new(winston.transports.Console)({
+						level: 'debug'
+					}));
+			transports.push(new(winston.transports.File)({
+						filename: this._logFileName,
+						level: 'debug'
+					}));	
+		} else {
+			transports.push(new(winston.transports.Console)({
+						level: 'error'
+					}));	
+			transports.push(new(winston.transports.File)({
+						filename: this._logFileName,
+						level: 'info'
+					}));	
+		}
 
-	if (__loggers[location]) {
-		return __loggers[location];
+		this._logger = new(winston.Logger)({
+				transports: transports
+			});
 	}
 
-	let transports = [];
+    log() {
+    	this._logger.log.apply(this._logger, arguments);
+    }
 
-	if (config.debug) {
-		transports.push(new(winston.transports.Console)({
-					level: 'debug'
-				}));
-		transports.push(new(winston.transports.File)({
-					filename: location,
-					level: 'debug'
-				}));	
-	} else {
-		transports.push(new(winston.transports.Console)({
-					level: 'error'
-				}));	
-		transports.push(new(winston.transports.File)({
-					filename: location,
-					level: 'info'
-				}));	
-	}
+    info() {
+    	this._logger.info.apply(this._logger, arguments);
+    }
 
-	__loggers[location] = new(winston.Logger)({
-		transports: transports
-	});
+    warn() {
+    	this._logger.warn.apply(this._logger, arguments);
+    }
 
-	// __loggers[location].debug('New Logger instance created');
+    debug() {
+    	this._logger.debug.apply(this._logger, arguments);
+    }
 
-	return __loggers[location];
-};
+    error() {
+    	this._logger.error.apply(this._logger, arguments);
+    }
+}
 
-
-module.exports = getLogger;
+module.exports = Logger;

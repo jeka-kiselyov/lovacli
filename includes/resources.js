@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const config = require(path.join(__dirname, '../includes/config.js'));
-const log = require(path.join(__dirname, '../includes/logger.js'))();
 
 let walk = function(dir, done) {
 	let results = [];
@@ -34,8 +32,6 @@ let walk = function(dir, done) {
 };
 
 let loadModelsPaths = function(dirname) {
-	dirname = dirname || config.paths.models;
-
 	return new Promise(function(resolve, reject) {
 		walk(dirname, function(err, results) {
 			if (err) {
@@ -49,7 +45,6 @@ let loadModelsPaths = function(dirname) {
 exports.loadModelsPaths = loadModelsPaths;
 
 exports.loadModels = function(dirname) {
-	dirname = dirname || config.paths.models;
 	return new Promise(function(resolve, reject) {
 		loadModelsPaths(dirname).then(function(paths){
 			let models = [];
@@ -70,7 +65,6 @@ exports.loadModels = function(dirname) {
 
 
 exports.loadCommands = function(dirname) {
-	dirname = dirname || config.paths.commands;
 	return new Promise(function(resolve, reject) {
 
 		walk(dirname, function(err, results) {
@@ -83,13 +77,7 @@ exports.loadCommands = function(dirname) {
 				let name = file.substr(file.lastIndexOf('/'), file.indexOf('.'));
 				let inc = require(file);
 
-				if (inc && 'handler') {
-					commands.push({
-						handler: inc.handler
-					});
-				} else {
-					log.error('Error: resources: Bad code in '+file+' command');
-				}
+				commands.push(inc);
 			});
 
 			resolve(commands);

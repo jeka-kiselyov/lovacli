@@ -1,70 +1,44 @@
-const fs = require('fs');
 const path = require('path');
 
-const resources = require(path.join(__dirname, '../includes/resources.js'));
-const config = require(path.join(__dirname, '../includes/config.js'));
-
-let db = {};
-let log = require(path.join(__dirname, '../includes/logger.js'))();
-
-let init = function() {
-	return new Promise(function(resolve, reject) {
-		let initialize = null;
-		if (config.database && config.database.dialect == 'mongodb') {
-			initialize = require(path.join(__dirname, '../includes/db/mongodb.js')).init;
-		} else if (config.database && config.database.dialect == 'mysql') {
-			initialize = require(path.join(__dirname, '../includes/db/mysql.js')).init;
-		} else {
-			return reject('Invalid database dialect in config');
-		}
-
-		initialize().then(function(models){
-			for (var k in models) {
-				db[k] = models[k];
-			}
-			resolve(db);
-		}).catch(reject);
-	});
-};
-
-
-let getDocument = function(documentOrId, documentType) {
-	return new Promise(function(resolve, reject) {
-		if (documentOrId instanceof db[documentType]) {
-			resolve(documentOrId);
-		} else {
-			db[documentType].findById(documentOrId).then(function(document){
-				resolve(document);
-			}).catch(function(e){
-				resolve(null);
-			});
-		}
-	});
-};
-
-let getDocumentId = function(documentOrId) {
-	if (documentOrId && documentOrId.constructor.name === 'model') {
-		// object is mongoose object
-		return mongoose.Types.ObjectId(documentOrId.id);
-	} else {
-		return mongoose.Types.ObjectId(documentOrId);
+class DB {
+	constructor(params = {}) {
+		this._config = params.config || {};
+		this._logger = params.logger || {};
 	}
-};
 
-let isIdsEquals = function(documentOrId1, documentOrId2) {
-	return (getDocumentId(documentOrId1).equals(getDocumentId(documentOrId2)));
-}
+	get config() {
+		return this._config;
+	}
 
-let requireDialect = function(dialect) {
-	if (config.database.dialect != dialect) {
-		throw ''+dialect+' is required';
+	get logger() {
+		return this._logger;
+	}
+
+	async init() {
+		let availableSequelizeDialects = ['mysql', 'sqlite', 'postgres', 'mssql'];
+
+		let initializerClass = null;
+		if (this.config.database && this.config.database.dialect == 'mongodb') {
+			initializerClass = require(path.join(__dirname, '../includes/db/mongodb.js'));
+		} else if (this.config.database && (availableSequelizeDialects.indexOf(this.config.database.dialect) != -1)) {
+			initializerClass = require(path.join(__dirname, '../includes/db/sequelize.js'));
+		} else {
+			return this;
+		}
+
+		let initializer = new initializerClass({
+			config: this.config,
+			logger: this.logger
+		});
+		
+		let models = await initializer.init();
+		for (let k in models) {
+			this[k] = models[k];
+		}
+
+		return this;
 	}
 }
 
-db.requireDialect = requireDialect;
-db.isIdsEquals = isIdsEquals;
-db.getDocumentId = getDocumentId;
-db.getDocument = getDocument;
-db.init = init;
 
-module.exports = db;
+module.exports = DB;

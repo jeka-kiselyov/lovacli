@@ -2,16 +2,49 @@
 
 const prog = require('caporal');
 const path = require('path');
+const _ = require('lodash');
 
-class LovaCLIApplication {
-	constructor(options) {
-		if (options) {
-			this.init(options);
-		}
+const Command = require(path.join(__dirname, 'includes/abstract/command.js'));
+const Logger = require(path.join(__dirname, 'includes/logger.js'));
+const DB = require(path.join(__dirname, 'includes/db.js'));
 
-		this._config = require(path.join(__dirname, 'includes/config.js'));
-		this._logger = require(path.join(__dirname, 'includes/logger.js'))();
-		this._db = require(path.join(__dirname, 'includes/db.js'));
+class Program {
+	constructor(options = {}) {
+
+		// default config
+		this._config = {
+			"name": "LovaCLISampleApp",
+			"debug": true,
+			"version": "1.0.0",
+			"paths": {
+				"models": path.join(__dirname, "../app/models"),
+				"commands": path.join(__dirname, "../app/commands"),
+				"tests": path.join(__dirname, "../app/tests")
+			}
+		};
+
+		// extend config with passed parameters
+		_.merge(this._config, options);
+
+		// load and initialize sub-classes
+		this._logger  = new Logger(this._config);
+		this._db = new DB({
+			config: this._config,
+			logger: this._logger
+		});
+
+		// initialize caporal program. https://www.npmjs.com/package/caporal
+		this._prog = prog
+			  .version('1.0.0')
+			  .logger(this.logger)
+			  .description(this.config.name);
+
+
+		this._prog.program = this;
+	}
+
+	get prog() {
+		return this._prog;
 	}
 
 	get logger() {
@@ -26,26 +59,23 @@ class LovaCLIApplication {
 		return this._config;
 	}
 
-	init(options = {}) {
-		this.config.updateConfig(options);
-
+	async init() {
 		try {
 			let resources = require(path.join(__dirname, 'includes/resources.js'));
 
-			prog
-			  .version('1.0.0')
-			  .logger(this.logger)
-			  .description(this.config.name);
+			let commandClasses = await resources.loadCommands(this.config.paths.commands);
 
-			prog.application = this;
-
-			resources.loadCommands().then(function(handlers){
-				for (let k in handlers) {
-					handlers[k].handler(prog);
+			for (let commandClass of commandClasses) {
+				if (Command.isPrototypeOf(commandClass)) {
+					let command = new commandClass({
+						program: this
+					});
+					command.init();
 				}
+			}
 
-				prog.parse(process.argv);
-			});
+			this.prog.parse(process.argv);
+
 		} catch(e) {
 			this.exit(e);
 		}
@@ -59,19 +89,22 @@ class LovaCLIApplication {
 				this.logger.error(""+e);			
 			}			
 			process.exit(1); // @todo: get code from Error object?
+		} else if (e) {
+			this.logger.error(""+e);			
+			process.exit(1);
 		} else {
 			process.exit();
 		}
 	}
 
 	handleCatcher(handler) {
-		let application = this;
+		let program = this;
 		if (handler && handler.constructor && handler.constructor.name == 'AsyncFunction') {
 			let newHandler = async function(args, options, logger) {
 				try {
 					return await handler(args, options, logger);
 				} catch(e) {
-					application.exit(e);
+					program.exit(e);
 				}
 				return null;
 			}
@@ -82,7 +115,7 @@ class LovaCLIApplication {
 				try {
 					return handler(args, options, logger);
 				} catch(e) {
-					application.exit(e);
+					program.exit(e);
 				}
 				return null;
 			}
@@ -93,10 +126,13 @@ class LovaCLIApplication {
 };
 
 if (!module.parent) {
-	let application = new LovaCLIApplication();
-	application.init();
+	let program = new Program();
+	program.init();
 } else {
-	module.exports = LovaCLIApplication;
+	module.exports = {
+		Program: Program,
+		Command: Command
+	};
 }
 
 

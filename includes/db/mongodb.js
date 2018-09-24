@@ -1,9 +1,6 @@
-const fs = require('fs');
-const path = require('path');
 
-const resources = require(path.join(__dirname, '../../includes/resources.js'));;
-const config = require(path.join(__dirname, '../../includes/config.js'));;
-const log = require(path.join(__dirname, '../../includes/logger.js'))();;
+const path = require('path');
+const resources = require(path.join(__dirname, '../../includes/resources.js'));
 
 try {
     require.resolve("mongoose");
@@ -14,49 +11,54 @@ try {
 
 const mongoose = require('mongoose');
 
-const options = {
-	logging: false
-};
+class MongoDBInitilizer {
+	constructor(params = {}) {
+		this._config = params.config || {};
+		this._logger = params.logger || {};
+	}
 
-let initMongoose = function() {
-	return new Promise(function(resolve, reject) {
+	get config() {
+		return this._config;
+	}
+
+	get logger() {
+		return this._logger;
+	}
+
+	async init() {
 		let db = {};
 
 	    let options = { 
 	    	useNewUrlParser: true
 	    };
 
-		log.debug('Creating connection to MongoDB');
-	    mongoose.createConnection(config.database.database, options).then(function(connection){
-			log.debug('We are connected to db');
+		this.logger.debug('Creating connection to MongoDB');
 
-			resources.loadModelsPaths().then(function(paths){
-				paths.forEach(function(path) {
-					let inc = null;
-					try {
-						let model = require(path);
-						inc = model(mongoose, connection);
+		let connection = await mongoose.createConnection(this.config.database.database, options);
 
-						if (inc && inc.modelName && inc.model) {
-							db[inc.modelName] = inc.model;
-						} else {
-							throw 'modelName and model missed';
-						}
-					} catch(e) {
-						log.error("Invalid mongoose model: "+path+" | ", e);
-					}
-				});
+		this.logger.debug('We are connected to MongoDB');
 
-				log.debug('Models loaded');
-				/// Ready
-				resolve(db);
-			});			
-	    }).catch(function(err){
-	    	log.error(err);
-	    	reject();
-	    });
-	});
-};
+		let modelPaths = await resources.loadModelsPaths(this.config.paths.models);
 
+		let that = this;
+		modelPaths.forEach(function(path) {
+			let inc = null;
+			try {
+				let model = require(path);
+				inc = model(mongoose, connection);
 
-exports.init = initMongoose;
+				if (inc && inc.modelName && inc.model) {
+					db[inc.modelName] = inc.model;
+				} else {
+					throw 'modelName and model missed';
+				}
+			} catch(e) {
+				that.logger.error("Invalid mongoose model: "+path+" | ", e);
+			}
+		});
+
+		return db;
+	}
+}
+
+module.exports = MongoDBInitilizer;

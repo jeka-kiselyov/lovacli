@@ -1,5 +1,4 @@
-// var db = rfr('includes/db.js');
-// db.requireDialect('mongodb');
+
 
 module.exports = function(mongoose, connection) {
 	var modelName = 'Sample';
