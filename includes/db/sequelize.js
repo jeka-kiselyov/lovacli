@@ -6,7 +6,7 @@ const resources = require(path.join(__dirname, '../../includes/resources.js'));
 try {
     require.resolve("sequelize");
 } catch(e) {
-    log.error("Sequelize is not found. Install it in order to use mysql models in lovacli. Run: npm install sequelize --save");
+    console.error("Sequelize is not found. Install it in order to use mysql models in lovacli. Run: npm install sequelize --save");
     process.exit(e.code);
 }
 

@@ -4,6 +4,7 @@ class DB {
 	constructor(params = {}) {
 		this._config = params.config || {};
 		this._logger = params.logger || {};
+		this._program = params.program || null;
 	}
 
 	get config() {
@@ -34,6 +35,13 @@ class DB {
 		let models = await initializer.init();
 		for (let k in models) {
 			this[k] = models[k];
+
+			if (models[k].logger === undefined) {
+				models[k].logger = this.logger;
+			}
+			if (models[k].program === undefined) {
+				models[k].program = this._program;
+			}
 		}
 
 		return this;

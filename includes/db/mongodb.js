@@ -5,7 +5,7 @@ const resources = require(path.join(__dirname, '../../includes/resources.js'));
 try {
     require.resolve("mongoose");
 } catch(e) {
-    log.error("Mongoose is not found. Install it in order to use mongodb models in lovacli. Run: npm install mongoose --save");
+    console.error("Mongoose is not found. Install it in order to use mongodb models in lovacli. Run: npm install mongoose --save");
     process.exit(e.code);
 }
 

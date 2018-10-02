@@ -4,6 +4,7 @@ const prog = require('caporal');
 const path = require('path');
 const _ = require('lodash');
 
+const LovaClass = require(path.join(__dirname, 'includes/abstract/lovaclass.js'));
 const Command = require(path.join(__dirname, 'includes/abstract/command.js'));
 const Logger = require(path.join(__dirname, 'includes/logger.js'));
 const DB = require(path.join(__dirname, 'includes/db.js'));
@@ -30,7 +31,8 @@ class Program {
 		this._logger  = new Logger(this._config);
 		this._db = new DB({
 			config: this._config,
-			logger: this._logger
+			logger: this._logger,
+			program: this
 		});
 
 		// initialize caporal program. https://www.npmjs.com/package/caporal
@@ -131,7 +133,8 @@ if (!module.parent) {
 } else {
 	module.exports = {
 		Program: Program,
-		Command: Command
+		Command: Command,
+		LovaClass: LovaClass
 	};
 }
 
