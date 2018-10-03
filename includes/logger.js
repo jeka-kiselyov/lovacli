@@ -17,7 +17,7 @@ class Logger {
 					}));	
 		} else {
 			transports.push(new(winston.transports.Console)({
-						level: 'error'
+						level: 'info'
 					}));	
 			transports.push(new(winston.transports.File)({
 						filename: this._logFileName,

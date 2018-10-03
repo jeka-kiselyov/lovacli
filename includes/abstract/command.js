@@ -1,6 +1,9 @@
+const EventEmitter = require('events');
 
-class Command {
+class Command extends EventEmitter {
     constructor(options = {}) {
+        super();
+        
         this._program = null;
         if (options.program) {
             this._program = options.program;
@@ -43,6 +46,7 @@ class Command {
                 try {
                     return await that.handle(args, options, logger);
                 } catch(e) {
+                    that.emit('error', e);
                     that.program.exit(e);
                 }
                 return null;
@@ -54,6 +58,7 @@ class Command {
                 try {
                     return that.handle(args, options, logger);
                 } catch(e) {
+                    that.emit('error', e);
                     that.program.exit(e);
                 }
                 return null;
