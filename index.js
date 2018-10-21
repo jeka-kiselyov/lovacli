@@ -37,7 +37,7 @@ class Program {
 
 		// initialize caporal program. https://www.npmjs.com/package/caporal
 		this._prog = prog
-			  .version('1.0.0')
+			  .version(this._config.version)
 			  .logger(this.logger)
 			  .description(this.config.name);
 
