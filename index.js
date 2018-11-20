@@ -81,7 +81,11 @@ class Program {
 			await command.init();
 
 			this._commands[name] = command;
+
+			return command;
 		}
+
+		return null;
 	}
 
 	async execute(name, args = [], options = {}) {
