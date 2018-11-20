@@ -29,11 +29,16 @@ class Program {
 
 		// load and initialize sub-classes
 		this._logger  = new Logger(this._config);
-		this._db = new DB({
-			config: this._config,
-			logger: this._logger,
-			program: this
-		});
+
+		if (this._config.database) {
+			this._db = new DB({
+				config: this._config,
+				logger: this._logger,
+				program: this
+			});
+		} else {
+			this._db = null;
+		}
 
 		// initialize caporal program. https://www.npmjs.com/package/caporal
 		this._prog = prog
@@ -41,6 +46,8 @@ class Program {
 			  .logger(this.logger)
 			  .description(this.config.name);
 
+		//
+		this._commands = {};
 
 		this._prog.program = this;
 	}
@@ -61,23 +68,50 @@ class Program {
 		return this._config;
 	}
 
-	async init() {
+	async loadCommand(filename) {
+		let name = filename.substr(filename.lastIndexOf('/') + 1, filename.length - filename.lastIndexOf('.') + 1);
+		let inc = require(filename);
+
+		if (Command.isPrototypeOf(inc)) {
+			let command = new inc({
+				program: this,
+				name: name
+			});
+
+			await command.init();
+
+			this._commands[name] = command;
+		}
+	}
+
+	async execute(name, args = [], options = {}) {
+		if (typeof(this._commands[name]) === undefined) {
+			throw new Error('Invalid command name: '+name);
+		}
+
+		return await this._commands[name].execute(args, options);
+	}
+
+	async init(handleImmediate = true) {
 		try {
 			let resources = require(path.join(__dirname, 'includes/resources.js'));
+			let filenames = await resources.loadPaths(this.config.paths.commands);
 
-			let commandClasses = await resources.loadCommands(this.config.paths.commands);
-
-			for (let commandClass of commandClasses) {
-				if (Command.isPrototypeOf(commandClass)) {
-					let command = new commandClass({
-						program: this
-					});
-					command.init();
-				}
+			for (let filename of filenames) {
+				await this.loadCommand(filename);
 			}
+		} catch(e) {
+			this.exit(e);
+		}
 
+		if (handleImmediate) {
+			await this.handle();
+		}
+	}
+
+	async handle() {
+		try {
 			this.prog.parse(process.argv);
-
 		} catch(e) {
 			this.exit(e);
 		}

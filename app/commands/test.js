@@ -1,8 +1,9 @@
 const { Program, Command } = require('lovacli');
 
 class Handler extends Command {
-    setup() {
-        return this.prog.command('test', 'Test command');
+    setup(progCommand) {
+        progCommand.argument('[opt]', 'Some option', /^mine|theirs$/);
+        progCommand.description('Some command description');
     }
 
     async handle(args, options, logger) {
@@ -21,7 +22,6 @@ class Handler extends Command {
 
 
         logger.info('Done.');
-        // cli.exit();
     }
 };
 

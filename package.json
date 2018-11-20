@@ -1,6 +1,6 @@
 {
   "name": "lovacli",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "node.js CLI boilerplate with optional Mongoose/Sequelize as MongoDB, MySQL, SQLite, PostgreSQL ORM/ODM",
   "license": "MIT",
   "main": "index.js",
@@ -13,7 +13,7 @@
   },
   "author": "Jeka Kiselyov <jeka911@gmail.com>",
   "dependencies": {
-    "caporal": "^0.6.0",
+    "caporal": "^1.1.0",
     "lodash": "^4.17.4",
     "winston": "^2.3.1"
   },

@@ -31,7 +31,7 @@ let walk = function(dir, done) {
 	});
 };
 
-let loadModelsPaths = function(dirname) {
+let loadPaths = function(dirname) {
 	return new Promise(function(resolve, reject) {
 		walk(dirname, function(err, results) {
 			if (err) {
@@ -42,11 +42,11 @@ let loadModelsPaths = function(dirname) {
 		});
 	});
 };
-exports.loadModelsPaths = loadModelsPaths;
+exports.loadModelsPaths = loadPaths;
 
 exports.loadModels = function(dirname) {
 	return new Promise(function(resolve, reject) {
-		loadModelsPaths(dirname).then(function(paths){
+		loadPaths(dirname).then(function(paths){
 			let models = [];
 			paths.forEach(function(file){
 				let inc = require(file);
@@ -63,6 +63,8 @@ exports.loadModels = function(dirname) {
 	});
 };
 
+
+exports.loadPaths = loadPaths;
 
 exports.loadCommands = function(dirname) {
 	return new Promise(function(resolve, reject) {

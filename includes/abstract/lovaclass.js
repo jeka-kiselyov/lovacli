@@ -1,6 +1,9 @@
+const EventEmitter = require('events');
 
-class LovaClass {
+class LovaClass extends EventEmitter {
     constructor(options = {}) {
+        super();
+
         this._program = null;
         this._db = options.db || null;
         this._logger = options.logger || null;
@@ -22,6 +25,19 @@ class LovaClass {
 
     get logger() {
         return this._logger;
+    }
+
+    async callMethod(methodName, ...args) {
+        if (this[methodName] && this[methodName].constructor) {
+            if (this[methodName].constructor.name == 'AsyncFunction') {
+                return await (this[methodName].apply(this, args));
+            } 
+            if (this[methodName].constructor.name == 'Function') {
+                return this[methodName].apply(this, args);                
+            }
+        }
+
+        return this[methodName];
     }
 
 }

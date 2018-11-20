@@ -1,41 +1,57 @@
-const EventEmitter = require('events');
+const path = require('path');
+const LovaClass = require(path.join(__dirname, 'lovaclass.js'));
 
-class Command extends EventEmitter {
+class Command extends LovaClass {
     constructor(options = {}) {
-        super();
-        
-        this._program = null;
-        if (options.program) {
-            this._program = options.program;
+        super(options);
+
+        if (options.name) {
+            this._name = ''+options.name;
+        } else {
+            this._name = null;
         }
-    }
-
-    get program() {
-        return this._program;
-    }
-
-    get db() {
-        return this.program.db;
-    }
-
-    get logger() {
-        return this.program.logger;
     }
 
     get prog() {
         return this.program.prog;
     }
 
-    setup() {
-        return this.prog.command('test', 'Abstract test method, setup() should be implemented in child handler class');
+    async name() {
+        if (this._name) {
+            return this._name;
+        }
     }
 
-    init() {
-        let progCommand = this.setup();
-        progCommand.action(this.handleCatcher());
+    async description() {
+        if (this._description) {
+            return this._description;
+        }
     }
 
-    handle() {
+    async setup(progCommand) {
+        // progCommand.argument('<app>', 'App to deploy', /^myapp|their-app$/);
+    }
+
+    async init() {
+        let name = await this.callMethod('name');
+        let description = await this.callMethod('description');
+        
+        /// create Caporal.js command https://github.com/mattallty/Caporal.js/blob/master/lib/command.js
+        this._progCommand = this.prog.command(name, description);
+        /// assign action to it. This does not execute it. 
+        this._progCommand.action(this.handleCatcher());
+
+        await this.callMethod('setup', this._progCommand);
+    }
+
+    async execute(args = [], options = {}) {
+        let name = await this.callMethod('name');
+        args.unshift(name);
+
+        this.program.prog.exec(args, options);
+    }
+
+    handle(args, options, logger) {
 
     }
 
