@@ -203,10 +203,10 @@ Returns command name.
 ##### `.program` : Parent Program instance
 
 ```javascript
-    async handle(args, options, logger) {
-        this.program.execute('othercommand, [1,'2'], {option: 'value'});
-        this.program.exit(new Error('Hmmm!'));
-    }
+async handle(args, options, logger) {
+    this.program.execute('othercommand', [1,'2'], {option: 'value'});
+    this.program.exit(new Error('Hmmm!'));
+}
 ```
 
 ### How to?
