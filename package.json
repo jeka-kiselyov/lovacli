@@ -1,6 +1,6 @@
 {
   "name": "lovacli",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "node.js CLI boilerplate with optional Mongoose/Sequelize as MongoDB, MySQL, SQLite, PostgreSQL ORM/ODM",
   "license": "MIT",
   "main": "index.js",

@@ -48,7 +48,7 @@ class Command extends LovaClass {
         let name = await this.callMethod('name');
         args.unshift(name);
 
-        this.program.prog.exec(args, options);
+        await this.program.prog.exec(args, options);
     }
 
     handle(args, options, logger) {
