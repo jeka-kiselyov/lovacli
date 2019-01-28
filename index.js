@@ -69,7 +69,7 @@ class Program {
 	}
 
 	async loadCommand(filename) {
-		let name = filename.substr(filename.lastIndexOf('/') + 1, filename.length - filename.lastIndexOf('.') + 1);
+		let name = path.basename(filename, path.extname(filename));
 		let inc = require(filename);
 
 		if (Command.isPrototypeOf(inc)) {
