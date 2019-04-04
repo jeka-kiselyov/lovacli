@@ -46,6 +46,10 @@ class Program {
 			  .logger(this.logger)
 			  .description(this.config.name);
 
+		this._prog.fatalError = (e)=>{
+			this.exit(e);
+		};
+
 		//
 		this._commands = {};
 
