@@ -57,6 +57,9 @@ class MongoDBInitilizer {
 			}
 		});
 
+		db.mongoose = mongoose;
+		db.connection = connection;
+
 		return db;
 	}
 }
