@@ -45,7 +45,7 @@ class MongoDBInitilizer {
 			let inc = null;
 			try {
 				let model = require(path);
-				inc = model(mongoose, connection);
+				inc = model(mongoose, connection, db);
 
 				if (inc && inc.modelName && inc.model) {
 					db[inc.modelName] = inc.model;

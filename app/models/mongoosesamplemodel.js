@@ -1,6 +1,6 @@
 
 
-module.exports = function(mongoose, connection) {
+module.exports = function(mongoose, connection, db) {
 	var modelName = 'Sample';
 	var schema = mongoose.Schema({
 	    name: String,
