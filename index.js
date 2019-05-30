@@ -46,9 +46,14 @@ class Program {
 			  .logger(this.logger)
 			  .description(this.config.name);
 
-		this._prog.fatalError = (e)=>{
+		this._fatalErrorCatcher = (e)=>{
 			this.exit(e);
 		};
+		this._executionErrorCatcher = (e)=>{
+
+		};
+
+		this._prog.fatalError = this._fatalErrorCatcher;
 
 		//
 		this._commands = {};
@@ -93,11 +98,15 @@ class Program {
 	}
 
 	async execute(name, args = [], options = {}) {
+		this._prog.fatalError = this._executionErrorCatcher;
+
 		if (typeof(this._commands[name]) === undefined) {
 			throw new Error('Invalid command name: '+name);
 		}
 
-		return await this._commands[name].execute(args, options);
+		let commandResults = await this._commands[name].execute(args, options);
+		this._prog.fatalError = this._fatalErrorCatcher;
+		return commandResults;
 	}
 
 	async init(handleImmediate = true) {
