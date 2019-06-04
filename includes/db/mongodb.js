@@ -15,6 +15,8 @@ class MongoDBInitilizer {
 	constructor(params = {}) {
 		this._config = params.config || {};
 		this._logger = params.logger || {};
+
+		this._initializedInstance = null;
 	}
 
 	get config() {
@@ -26,6 +28,10 @@ class MongoDBInitilizer {
 	}
 
 	async init() {
+		if (this._initializedInstance !== null) {
+			return this._initializedInstance;
+		}
+
 		let db = {};
 
 	    let options = { 
@@ -59,6 +65,8 @@ class MongoDBInitilizer {
 
 		db.mongoose = mongoose;
 		db.connection = connection;
+
+		this._initializedInstance = db;
 
 		return db;
 	}
