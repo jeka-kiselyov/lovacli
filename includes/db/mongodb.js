@@ -35,7 +35,8 @@ class MongoDBInitilizer {
 		let db = {};
 
 	    let options = { 
-	    	useNewUrlParser: true
+	    	useNewUrlParser: true,
+				useUnifiedTopology: true
 	    };
 
 		this.logger.debug('Creating connection to MongoDB');
